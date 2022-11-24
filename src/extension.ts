@@ -1,18 +1,27 @@
 import * as vscode from "vscode";
 
-import provider from "./provider";
-
-// Utils
+import { getTopStoriesData } from "./api";
 import getExtension from "./getExtension";
+import provider from "./provider";
+import templateHTML from "./templates/html";
 
 export function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand("vsc-hn.startVscHn", async () => {
-    const languageChoice = await vscode.window.showQuickPick(["HTML"]);
+    const languageChoice = await vscode.window.showQuickPick(["HTML"], {
+      placeHolder: "Select the language your want your HN formatted in.",
+    });
     const extension = getExtension(languageChoice);
+
+    const topStoriesFinal = await getTopStoriesData();
+
     context.subscriptions.push(
       vscode.workspace.registerTextDocumentContentProvider(
         "vsc-hn",
-        provider(`Hey from ${extension} provider!`)
+        provider(
+          templateHTML({
+            stories: topStoriesFinal,
+          })
+        )
       )
     );
     const uri = vscode.Uri.parse(`vsc-hn:vsc-hn.${extension}`);
