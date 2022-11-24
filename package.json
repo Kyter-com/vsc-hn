@@ -4,6 +4,14 @@
   "description": "",
   "version": "0.0.1",
   "publisher": "Kyter",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kyter-com/vsc-hn"
+  },
+  "bugs": {
+    "url": "https://github.com/Kyter-com/vsc-hn/issues"
+  },
   "engines": {
     "vscode": "^1.73.0"
   },
