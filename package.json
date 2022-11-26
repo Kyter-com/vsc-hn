@@ -27,8 +27,27 @@
       {
         "command": "vsc-hn.startVscHn",
         "title": "VSC-HN: Start"
+      },
+      {
+        "command": "vsc-hn.refresh",
+        "title": "Refresh (↻)"
       }
-    ]
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "vsc-hn.refresh",
+          "group": "navigation",
+          "when": "resourceScheme == vsc-hn"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "vsc-hn.refresh",
+          "when": "resourceScheme == vsc-hn"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "pnpm run package",
