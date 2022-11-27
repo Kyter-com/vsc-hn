@@ -3,7 +3,6 @@ import storyHTML from "./story";
 import type { HNStory } from "../../types/story";
 
 const templateHTML = ({ stories }: { stories: HNStory[] }) => {
-  console.log(stories);
   return `<!DOCTYPE html>
 <html lang="en">
 <head>

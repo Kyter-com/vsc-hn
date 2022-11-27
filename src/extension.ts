@@ -1,12 +1,14 @@
 import * as vscode from "vscode";
 
-import { getTopStoriesData } from "./api";
 import getExtension from "./getExtension";
+import getStoriesByType from "./utils/getStoriesByType";
 import provider from "./provider";
 import templateHTML from "./templates/html";
 
 let languageChoiceState: string | undefined = undefined;
 let extensionState: string | undefined = undefined;
+let storyTypeState: string = "Top";
+let refreshState: number = 0;
 
 export function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand("vsc-hn.startVscHn", async () => {
@@ -14,54 +16,61 @@ export function activate(context: vscode.ExtensionContext) {
       placeHolder: "Select the language your want your HN formatted in.",
     });
     const extension = getExtension(languageChoice);
+    const storyType = await vscode.window.showQuickPick(["Top", "New", "Ask"], {
+      placeHolder: "Select the type of stories you want to see.",
+    });
+
     languageChoiceState = languageChoice;
     extensionState = extension;
+    storyTypeState = storyType || "Top";
 
-    const topStories = await getTopStoriesData();
+    const stories = await getStoriesByType(storyTypeState);
 
     context.subscriptions.push(
       vscode.workspace.registerTextDocumentContentProvider(
         "vsc-hn",
         provider(
           templateHTML({
-            stories: topStories,
+            stories,
           })
         )
       )
     );
     const uri = vscode.Uri.parse(`vsc-hn:vsc-hn.${extension}`);
     const doc = await vscode.workspace.openTextDocument(uri);
-    await vscode.window.showTextDocument(doc);
+    await vscode.window.showTextDocument(doc, {
+      preview: false,
+    });
   });
 
   context.subscriptions.push(
     vscode.commands.registerCommand("vsc-hn.refresh", async () => {
       if (!vscode.window.activeTextEditor) {
-        console.log("No editor");
         return; // no editor
       }
       const { document } = vscode.window.activeTextEditor;
       if (document.uri.scheme !== "vsc-hn") {
-        console.log("No scheme");
         return; // not my scheme
       }
-
-      const topStories = await getTopStoriesData();
-
+      vscode.commands.executeCommand("workbench.action.closeActiveEditor");
+      const stories = await getStoriesByType(storyTypeState);
       context.subscriptions.push(
         vscode.workspace.registerTextDocumentContentProvider(
           "vsc-hn",
           provider(
             templateHTML({
-              stories: topStories,
+              stories: stories,
             })
           )
         )
       );
-      console.log("Refresh for extension", extensionState);
-      const uri = vscode.Uri.parse(`vsc-hn:vsc-hn.${extensionState}`);
+      const uri = vscode.Uri.parse(
+        `vsc-hn:vsc-hn-${(refreshState += 1)}.${extensionState}`
+      );
       const doc = await vscode.workspace.openTextDocument(uri);
-      await vscode.window.showTextDocument(doc);
+      await vscode.window.showTextDocument(doc, {
+        preview: false,
+      });
     })
   );
 }
