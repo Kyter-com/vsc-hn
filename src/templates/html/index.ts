@@ -2,7 +2,13 @@ import storyHTML from "./story";
 
 import type { HNStory } from "../../types/story";
 
-const templateHTML = ({ stories }: { stories: HNStory[] }) => {
+const templateHTML = ({
+  stories,
+  storyType,
+}: {
+  stories: HNStory[];
+  storyType: string;
+}) => {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +16,7 @@ const templateHTML = ({ stories }: { stories: HNStory[] }) => {
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="last-modified" content="${new Date().toLocaleString()}">
-  <title>VSC-HN - Top Stories</title>
+  <title>VSC-HN - ${storyType} Stories</title>
 </head>
 <body>${stories
     .map((story) => {

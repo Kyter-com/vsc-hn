@@ -33,4 +33,19 @@ const getNewStoriesData = async (): Promise<HNStory[]> => {
   return data.map((story) => story.data);
 };
 
-export { getTopStoriesData, getNewStoriesData };
+const getAskStoriesData = async (): Promise<HNStory[]> => {
+  const ids = await axios.get(
+    "https://hacker-news.firebaseio.com/v0/askstories.json?print=pretty"
+  );
+  const promises = [];
+  for (let i = 0; i < 30; i += 1) {
+    const story = axios.get(
+      `https://hacker-news.firebaseio.com/v0/item/${ids.data[i]}.json`
+    );
+    promises.push(story);
+  }
+  const data = await Promise.all(promises);
+  return data.map((story) => story.data);
+};
+
+export { getTopStoriesData, getNewStoriesData, getAskStoriesData };

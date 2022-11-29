@@ -17,5 +17,3 @@ const storyHTML = (story: HNStory) => {
 };
 
 export default storyHTML;
-
-// TODO: Refresh doesn't work
